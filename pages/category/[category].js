@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import AppContext from "../../components/AppContext";
 import Layout from "../../components/Layout";
 import Product from "../../components/Product";
+import fetchProducts from "../../helpers/fetchProducts";
 
-const axios = require("axios").default;
-
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ params, res }) {
   return {
     props: {
       params,
@@ -13,35 +13,56 @@ export async function getServerSideProps({ params }) {
 }
 
 export default function Category({ params }) {
+  const [error, setError] = useState(false);
   const { category } = params;
-  const [isLoading, setIsloading] = useState(true);
-  const [currentProducts, setCurrentProducts] = useState([]);
+  const { products, dispatch } = useContext(AppContext);
+
+  const fetchData = async () => {
+    const products = await fetchProducts(params);
+    if (!products.length) {
+      setError(true);
+      return;
+    }
+
+    dispatch({
+      category,
+      products,
+    });
+
+    setError(false);
+  };
 
   useEffect(() => {
-      const fetchProducts = async () => {
-          try {
-              const {data} = await axios.get(`/api/${category}`);
-              setCurrentProducts(data.products);
-              setIsloading(false);
-          }
-          catch (err) {
-            console.log(err);
-          }
-      }
-
-
-      fetchProducts();
+    if (products[params]) {
+      return;
+    }
+    fetchData();
   }, []);
+
+  if (error) {
+    return (
+      <div className="alert alert-primary" role="alert">
+        An error ocurred. Please try again.
+        <button className="btn btn-primary">Refresh</button>
+      </div>
+    );
+  }
 
   return (
     <Layout>
-      {isLoading ? (
-        <h1>Loading...</h1>
-      ) : (
-          <div className="container" style={{display: 'flex', flexWrap: 'wrap', justifyContent: "space-around"}}>
-              {currentProducts.map((product) =><Product product={product} key={product.id} />)}
+      <div className="d-flex flex-wrap justify-content-around">
+        {products[category] ? (
+          products[category].map((product) => (
+            <Product product={product} key={product.id} />
+          ))
+        ) : (
+          <div className="d-flex justify-content-center">
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
           </div>
-      )}
+        )}
+      </div>
     </Layout>
   );
 }
