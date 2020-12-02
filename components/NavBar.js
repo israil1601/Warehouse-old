@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const NavBar = (props) => {
+const NavBar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <a className="navbar-brand">Warehouse</a>
@@ -34,8 +34,8 @@ const NavBar = (props) => {
             </Link>
           </li>
           <li className="nav-item">
-            <Link href="/category/accessoirs">
-              <a className="nav-link">Accessoirs</a>
+            <Link href="/category/accessories">
+              <a className="nav-link">Accessories</a>
             </Link>
           </li>
         </ul>

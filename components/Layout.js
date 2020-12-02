@@ -8,7 +8,7 @@ const Layout = (props) => {
         <title>Warehouse</title>
         <link
           rel="stylesheet"
-          href="https://bootswatch.com/4/darkly/bootstrap.min.css"
+          href="https://bootswatch.com/4/materia/bootstrap.min.css"
         />
       </Head>
       <NavBar />
